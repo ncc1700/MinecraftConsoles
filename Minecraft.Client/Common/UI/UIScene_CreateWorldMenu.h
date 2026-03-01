@@ -56,6 +56,7 @@ private:
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	bool m_bGameModeSurvival;
+	bool m_bHardcoreEnabled;
 	bool m_bMultiplayerAllowed;
 	DLCPack * m_pDLCPack;
 	bool m_bRebuildTouchBoxes;

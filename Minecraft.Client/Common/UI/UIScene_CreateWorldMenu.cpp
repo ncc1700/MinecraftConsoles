@@ -76,6 +76,7 @@ UIScene_CreateWorldMenu::UIScene_CreateWorldMenu(int iPad, void *initData, UILay
 	m_MoreOptionsParams.iPad = iPad;
 
 	m_bGameModeSurvival=true;
+	m_bHardcoreEnabled=false;
 	m_pDLCPack = NULL;
 	m_bRebuildTouchBoxes = false;
 
@@ -446,15 +447,24 @@ void UIScene_CreateWorldMenu::handlePress(F64 controlId, F64 childId)
 		}
 		break;
 	case eControl_GameModeToggle:
-		if(m_bGameModeSurvival)
+		if(m_bGameModeSurvival && !m_bHardcoreEnabled)
 		{
 			m_buttonGamemode.setLabel(app.GetString(IDS_GAMEMODE_CREATIVE));
-			m_bGameModeSurvival=false;
+			m_bGameModeSurvival = false;
+			m_bHardcoreEnabled = false;
+		}
+		else if (!m_bGameModeSurvival && !m_bHardcoreEnabled) 
+		{
+			
+			m_buttonGamemode.setLabel(L"placeholder.hardcore");
+			m_bGameModeSurvival = true;
+			m_bHardcoreEnabled = true;
 		}
 		else
 		{
 			m_buttonGamemode.setLabel(app.GetString(IDS_GAMEMODE_SURVIVAL));
-			m_bGameModeSurvival=true;
+			m_bGameModeSurvival = true;
+			m_bHardcoreEnabled = false;
 		}
 		break;
 	case eControl_MoreOptions:
@@ -633,11 +643,17 @@ void UIScene_CreateWorldMenu::handleSliderMove(F64 sliderId, F64 currentValue)
 	switch((int)sliderId)
 	{
 	case eControl_Difficulty:
-		m_sliderDifficulty.handleSliderMove(value);
-
-		app.SetGameSettings(m_iPad,eGameSetting_Difficulty,value);
-		swprintf( (WCHAR *)TempString, 256, L"%ls: %ls", app.GetString( IDS_SLIDER_DIFFICULTY ),app.GetString(m_iDifficultyTitleSettingA[value]));		
-		m_sliderDifficulty.setLabel(TempString);
+		if (m_bHardcoreEnabled) 
+		{	
+			swprintf((WCHAR*)TempString, 256, L"%ls: %ls", app.GetString(IDS_SLIDER_DIFFICULTY), app.GetString(m_iDifficultyTitleSettingA[3]));
+			m_sliderDifficulty.setLabel(TempString);
+		}
+		else
+		{
+			app.SetGameSettings(m_iPad, eGameSetting_Difficulty, value);
+			swprintf((WCHAR*)TempString, 256, L"%ls: %ls", app.GetString(IDS_SLIDER_DIFFICULTY), app.GetString(m_iDifficultyTitleSettingA[value]));
+			m_sliderDifficulty.setLabel(TempString);
+		}
 		break;
 	}
 }
@@ -1157,8 +1173,14 @@ void UIScene_CreateWorldMenu::CreateGame(UIScene_CreateWorldMenu* pClass, DWORD 
 
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 	pMinecraft->skins->selectTexturePackById(pClass->m_MoreOptionsParams.dwTexturePack);
-
-	app.SetGameHostOption(eGameHostOption_Difficulty,Minecraft::GetInstance()->options->difficulty);
+	if (pClass->m_bHardcoreEnabled) 
+	{
+		app.SetGameHostOption(eGameHostOption_Difficulty, 3);
+	}
+	else
+	{
+		app.SetGameHostOption(eGameHostOption_Difficulty, Minecraft::GetInstance()->options->difficulty);
+	}
 	app.SetGameHostOption(eGameHostOption_FriendsOfFriends,pClass->m_MoreOptionsParams.bAllowFriendsOfFriends);
 	app.SetGameHostOption(eGameHostOption_Gamertags,app.GetGameSettings(pClass->m_iPad,eGameSetting_GamertagsVisible)?1:0);
 
@@ -1176,7 +1198,8 @@ void UIScene_CreateWorldMenu::CreateGame(UIScene_CreateWorldMenu* pClass, DWORD 
 	app.SetGameHostOption(eGameHostOption_HostCanFly,pClass->m_MoreOptionsParams.bHostPrivileges);
 	app.SetGameHostOption(eGameHostOption_HostCanChangeHunger,pClass->m_MoreOptionsParams.bHostPrivileges);
 	app.SetGameHostOption(eGameHostOption_HostCanBeInvisible,pClass->m_MoreOptionsParams.bHostPrivileges );
-
+	app.SetGameHostOption(eGameHostOption_Hardcore, pClass->m_bHardcoreEnabled);
+	printf("Hardcore: %d\n", app.GetGameHostOption(eGameHostOption_Hardcore));
 	g_NetworkManager.HostGame(dwLocalUsersMask,isClientSide,isPrivate,MINECRAFT_NET_MAX_PLAYERS,0);
 
 	param->settings = app.GetGameHostOption( eGameHostOption_All );

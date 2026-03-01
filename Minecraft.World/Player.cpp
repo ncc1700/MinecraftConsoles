@@ -2885,6 +2885,14 @@ bool Player::isAllowedToTeleport()
 	return allowed;
 }
 
+bool Player::isHardcore() {
+	bool enabled = false;
+	if (app.GetGameHostOption(eGameHostOption_Hardcore) != 0) {
+		enabled = true;
+	}
+	return enabled;
+}
+
 bool Player::hasInvisiblePrivilege()
 {
 	bool enabled = false;

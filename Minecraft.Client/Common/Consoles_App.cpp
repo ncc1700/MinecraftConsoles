@@ -7530,6 +7530,17 @@ void CMinecraftApp::SetGameHostOption(unsigned int &uiHostSettings, eGameHostOpt
 			uiHostSettings&=~GAME_HOST_OPTION_BITMASK_DISABLESAVE;
 		}
 		break;
+	case eGameHostOption_Hardcore:
+		if (uiVal != 0)
+		{
+			uiHostSettings |= GAME_HOST_OPTION_BITMASK_HARDCORE;
+		}
+		else
+		{
+			// off
+			uiHostSettings &= ~GAME_HOST_OPTION_BITMASK_HARDCORE;
+		}
+		break;
 	case eGameHostOption_All:
 		uiHostSettings=uiVal;
 		break;
@@ -7607,6 +7618,9 @@ unsigned int CMinecraftApp::GetGameHostOption(unsigned int uiHostSettings, eGame
 	case eGameHostOption_DisableSaving:
 		return (uiHostSettings&GAME_HOST_OPTION_BITMASK_DISABLESAVE);
 		break;		
+	case eGameHostOption_Hardcore:
+		return (uiHostSettings & GAME_HOST_OPTION_BITMASK_HARDCORE);
+		break;
 	}
 
 	return false;

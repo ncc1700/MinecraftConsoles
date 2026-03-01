@@ -502,6 +502,7 @@ public:
 	bool isAllowedToFly();
 	bool isAllowedToIgnoreExhaustion();
 	bool isAllowedToTeleport();
+	bool isHardcore();
 	bool hasInvisiblePrivilege();
 	bool hasInvulnerablePrivilege();
 	bool isModerator();

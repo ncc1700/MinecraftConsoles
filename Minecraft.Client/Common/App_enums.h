@@ -618,8 +618,8 @@ enum eGameHostOption
 	eGameHostOption_BedrockFog,
 	eGameHostOption_NoHUD,
 	eGameHostOption_All,
-
 	eGameHostOption_DisableSaving,
+	eGameHostOption_Hardcore
 };
 
 // 4J-PB - If any new DLC items are added to the TMSFiles, this array needs updated

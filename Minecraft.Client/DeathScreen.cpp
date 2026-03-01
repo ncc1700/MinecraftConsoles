@@ -8,7 +8,9 @@
 void DeathScreen::init()
 {
     buttons.clear();
-    buttons.push_back(new Button(1, width / 2 - 100, height / 4 + 24 * 3, L"Respawn"));
+    if (!minecraft->player->isHardcore()) {
+        buttons.push_back(new Button(1, width / 2 - 100, height / 4 + 24 * 3, L"Respawn"));
+    }
     buttons.push_back(new Button(2, width / 2 - 100, height / 4 + 24 * 4, L"Title menu"));
 
     if (minecraft->user == NULL)
@@ -29,7 +31,11 @@ void DeathScreen::buttonClicked(Button *button)
     }
     if (button->id == 1)
 	{
-        minecraft->player->respawn();
+        
+        if (!minecraft->player->isHardcore()) {
+            minecraft->player->respawn();
+        }
+   
         minecraft->setScreen(NULL);
         //          minecraft.setScreen(new NewLevelScreen(this));
     }

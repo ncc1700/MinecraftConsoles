@@ -9,15 +9,24 @@ UIScene_DeathMenu::UIScene_DeathMenu(int iPad, void *initData, UILayer *parentLa
 {
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
-
-	m_buttonRespawn.init(app.GetString(IDS_RESPAWN),eControl_Respawn);
+	Minecraft* pMinecraft = Minecraft::GetInstance();
+	if (!pMinecraft->player->isHardcore()) {
+		m_buttonRespawn.init(app.GetString(IDS_RESPAWN), eControl_Respawn);
+	}
+	else {
+		m_buttonRespawn.init(L"placeholder.spectate", eControl_Respawn);
+	}
 	m_buttonExitGame.init(app.GetString(IDS_EXIT_GAME),eControl_ExitGame);
-
+	if (!pMinecraft->player->isHardcore()) {
+		m_labelTitle.setLabel(app.GetString(IDS_YOU_DIED));
+	}
+	else {
+		m_labelTitle.setLabel(L"placeholder.gameover");
+	}
 	m_labelTitle.setLabel(app.GetString(IDS_YOU_DIED));
 
 	m_bIgnoreInput = false;
 
-	Minecraft *pMinecraft = Minecraft::GetInstance();
 	if(pMinecraft != NULL && pMinecraft->localgameModes[iPad] != NULL )
 	{
 		TutorialMode *gameMode = (TutorialMode *)pMinecraft->localgameModes[iPad];
@@ -81,9 +90,11 @@ void UIScene_DeathMenu::handleInput(int iPad, int key, bool repeat, bool pressed
 
 void UIScene_DeathMenu::handlePress(F64 controlId, F64 childId)
 {
+	Minecraft* pMinecraft = Minecraft::GetInstance();
 	switch((int)controlId)
 	{
 	case eControl_Respawn:
+		if (pMinecraft->player->isHardcore()) break;
 		m_bIgnoreInput = true;
 		app.SetAction(m_iPad,eAppAction_Respawn);
 #ifdef _DURANGO
